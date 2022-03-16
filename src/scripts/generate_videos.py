@@ -11,8 +11,9 @@ import torch
 
 import legacy
 from training.networks import Generator
-from scripts import save_video_grid
+from scripts import save_video
 from einops import rearrange
+from mmaction.apis import inference_recognizer,init_recognizer
 
 torch.set_grad_enabled(False)
 
@@ -30,6 +31,9 @@ def generate_videos(
     num_videos: int,
     seed: int,
     outdir: str,
+    model,
+    label_path,
+    fname
 ):
     print('Loading networks from "%s"...' % network_pkl)
     device = torch.device('cuda')
@@ -50,8 +54,13 @@ def generate_videos(
     images = [rearrange(
                         G(z, None, timesteps=timesteps, noise_mode='const')[0].cpu(),
                         '(b t) c h w -> b c t h w', t=timesteps) for z in grid_z]    
-
-    save_video_grid(images, outdir, drange=[-1, 1])
+    out=[]
+    for img in images:
+        save_video(img, outdir, drange=[-1, 1],fname=fname)
+        label = max(inference_recognizer(model,os.path.join(outdir,fname,label_path)),key=lambda item:item[1])[0]
+        out.append((img,label))
+    
+    return out
 
 
 if __name__ == "__main__":
