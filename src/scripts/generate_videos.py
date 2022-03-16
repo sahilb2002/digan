@@ -4,28 +4,27 @@ import sys; sys.path.extend(['.', 'src'])
 import os
 import random
 
-import click
+# import click
 import dnnlib
 import numpy as np
 import torch
 
 import legacy
 from training.networks import Generator
-from scripts import save_image_grid
+from scripts import save_video_grid
 from einops import rearrange
 
 torch.set_grad_enabled(False)
 
 
-@click.command()
-@click.pass_context
-@click.option('--network_pkl', help='Network pickle filename', required=True)
-@click.option('--timesteps', type=int, help='Timesteps', default=16, show_default=True)
-@click.option('--num_videos', type=int, help='Number of images to generate', default=100, show_default=True)
-@click.option('--seed', type=int, help='Random seed', default=42, metavar='DIR')
-@click.option('--outdir', help='Where to save the output images', type=str, required=True, metavar='DIR')
+# @click.command()
+# @click.pass_context
+# @click.option('--network_pkl', help='Network pickle filename', required=True)
+# @click.option('--timesteps', type=int, help='Timesteps', default=16, show_default=True)
+# @click.option('--num_videos', type=int, help='Number of images to generate', default=100, show_default=True)
+# @click.option('--seed', type=int, help='Random seed', default=42, metavar='DIR')
+# @click.option('--outdir', help='Where to save the output images', type=str, required=True, metavar='DIR')
 def generate_videos(
-    ctx: click.Context,
     network_pkl: str,
     timesteps: int,
     num_videos: int,
@@ -48,11 +47,11 @@ def generate_videos(
     grid_size = (int(math.sqrt(num_videos)), int(math.sqrt(num_videos)))
     grid_z = torch.randn([int(grid_size[0] * grid_size[1]), G.z_dim], device=device).split(1)
 
-    images = torch.cat([rearrange(
-                        G(z, None, timesteps=16, noise_mode='const')[0].cpu(),
-                        '(b t) c h w -> b c t h w', t=timesteps) for z in grid_z]).numpy()        
+    images = [rearrange(
+                        G(z, None, timesteps=timesteps, noise_mode='const')[0].cpu(),
+                        '(b t) c h w -> b c t h w', t=timesteps) for z in grid_z]    
 
-    save_image_grid(images, os.path.join(outdir, f'generate_videos.gif'), drange=[-1, 1], grid_size=grid_size)
+    save_video_grid(images, outdir, drange=[-1, 1])
 
 
 if __name__ == "__main__":
