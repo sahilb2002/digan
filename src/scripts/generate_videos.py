@@ -51,7 +51,7 @@ def generate_videos(
     grid_z = torch.randn([int(num_videos), G.z_dim], device=device).split(1)
 
     images = [rearrange(
-                        G(z, None, timesteps=timesteps, noise_mode='const')[0].cpu(),
+                        G(z, None, timesteps=timesteps, noise_mode='const')[0].cuda(),
                         '(b t) c h w -> b c t h w', t=timesteps) for z in grid_z]    
     out=[]
     f = open(label_path,'r')
