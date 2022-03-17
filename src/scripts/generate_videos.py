@@ -59,7 +59,7 @@ def generate_videos(
 
     for img in images:
         save_video(img, outdir, drange=[-1, 1],fname="video0.mp4")
-        label = max(inference_recognizer(model,os.path.join(outdir,"video0,mp4"),label_path),key=lambda item:item[1])[0]
+        label = max(inference_recognizer(model,os.path.join(outdir,"video0.mp4"),label_path),key=lambda item:item[1])[0]
         out.append((img,label_map.index(label)))
     
     return out
