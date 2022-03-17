@@ -36,7 +36,7 @@ def generate_videos(
     G
 ):
     # print('Loading networks from "%s"...' % network_pkl)
-    # device = torch.device('cuda')
+    device = torch.device('cuda')
     # with dnnlib.util.open_url(network_pkl) as f:
     #     G = legacy.load_network_pkl(f)['G_ema'].to(device).eval() # type: ignore
     #     G.forward = Generator.forward.__get__(G, Generator)
