@@ -48,8 +48,7 @@ def generate_videos(
     np.random.seed(seed)
     torch.manual_seed(seed)
 
-    grid_size = (int(math.sqrt(num_videos)), int(math.sqrt(num_videos)))
-    grid_z = torch.randn([int(grid_size[0] * grid_size[1]), G.z_dim], device=device).split(1)
+    grid_z = torch.randn([int(num_videos), G.z_dim], device=device).split(1)
 
     images = [rearrange(
                         G(z, None, timesteps=timesteps, noise_mode='const')[0].cpu(),
@@ -60,7 +59,7 @@ def generate_videos(
 
     for img in images:
         save_video(img, outdir, drange=[-1, 1],fname=fname)
-        label = max(inference_recognizer(model,os.path.join(outdir,fname,label_path)),key=lambda item:item[1])[0]
+        label = max(inference_recognizer(model,os.path.join(outdir,fname),label_path),key=lambda item:item[1])[0]
         out.append((img,label_map.index(label)))
     
     return out
