@@ -33,7 +33,6 @@ def generate_videos(
     outdir: str,
     model,
     label_path,
-    fname
 ):
     print('Loading networks from "%s"...' % network_pkl)
     device = torch.device('cuda')
@@ -58,8 +57,8 @@ def generate_videos(
     label_map = list(f.read().split('\n'))
 
     for img in images:
-        save_video(img, outdir, drange=[-1, 1],fname=fname)
-        label = max(inference_recognizer(model,os.path.join(outdir,fname),label_path),key=lambda item:item[1])[0]
+        save_video(img, outdir, drange=[-1, 1],fname="video0.mp4")
+        label = max(inference_recognizer(model,os.path.join(outdir,"video0,mp4"),label_path),key=lambda item:item[1])[0]
         out.append((img,label_map.index(label)))
     
     return out
