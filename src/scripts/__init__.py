@@ -9,7 +9,7 @@ def save_video(img,outdir, drange,fname="video0.mp4", normalize=True):
     _, C ,T ,H ,W = img.shape
     # print (f'Saving Video with {T} frames, img shape {H}, {W}')
 
-    img = img.numpy()
+    img = img.cpu().detach().numpy()
     if normalize:
         lo, hi = drange
         img = np.asarray(img, dtype=np.float32)
