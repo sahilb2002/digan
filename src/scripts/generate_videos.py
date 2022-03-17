@@ -55,10 +55,13 @@ def generate_videos(
                         G(z, None, timesteps=timesteps, noise_mode='const')[0].cpu(),
                         '(b t) c h w -> b c t h w', t=timesteps) for z in grid_z]    
     out=[]
+    f = open(label_path,'r')
+    label_map = list(f.read().split('\n'))
+
     for img in images:
         save_video(img, outdir, drange=[-1, 1],fname=fname)
         label = max(inference_recognizer(model,os.path.join(outdir,fname,label_path)),key=lambda item:item[1])[0]
-        out.append((img,label))
+        out.append((img,label_map.index(label)))
     
     return out
 
