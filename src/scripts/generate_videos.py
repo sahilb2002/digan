@@ -53,16 +53,21 @@ def generate_videos(
     images = [rearrange(
                         G(z, None, timesteps=timesteps, noise_mode='const')[0].cuda(),
                         '(b t) c h w -> b c t h w', t=timesteps) for z in grid_z]    
-    out=[]
+    out_tens=[]
+    out_lab = []
     f = open(label_path,'r')
     label_map = list(f.read().split('\n'))
 
     for img in images:
         save_video(img, outdir, drange=[-1, 1],fname="video0.mp4")
         label = max(inference_recognizer(model,os.path.join(outdir,"video0.mp4"),label_path),key=lambda item:item[1])[0]
-        out.append((img,label_map.index(label)))
+        label_ind = label_map.index(label)
+        label_ind = torch.tensor([label_ind], requires_grad = False).cuda()
+        img = img.transpose(1,2)
+        out_tens.append(img)
+        out_lab.append(label_ind)
     
-    return out
+    return out_tens,out_lab
 
 
 if __name__ == "__main__":
