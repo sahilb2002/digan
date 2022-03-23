@@ -33,7 +33,6 @@ train_args:
   cond: false
   batch: 1
   metrics: none
-  resume: "/content/drive/MyDrive/digan/code_new/experiments/TEST0-None/00000-kinetics-mirror-auto1-r1_gamma1-batch1-color-translation/network-snapshot-000022.pkl"
 
   # Let's by default have only x flips
   aug: noaug
