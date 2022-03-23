@@ -3,7 +3,7 @@ env:
   base_project_dir: ${hydra:runtime.cwd}
   before_train_commands: []
   torch_extensions_dir: "/tmp/torch_extensions"
-  datasets_dir: "/data"
+  datasets_dir: "/content/digan/prepare_data"
   objects_to_copy:
     - ${env.base_project_dir}/src
     - ${env.base_project_dir}/configs
@@ -12,10 +12,10 @@ env:
   symlinks_to_create:
     - ${env.base_project_dir}/data
 
-num_gpus: 8
+num_gpus: 1
 dataset:
   source_path: ${env.datasets_dir}/${dataset.name}
-  target_path: /data/${dataset.name}
+  target_path: ${env.datasets_dir}/${dataset.name}
 print_only: false
 
 project_release_dir:
@@ -31,6 +31,9 @@ train_args:
   snap: 100
   diffaugment: color,translation
   cond: false
+  batch: 1
+  metrics: none
+  resume: "/content/drive/MyDrive/digan/code_new/experiments/TEST0-None/00000-kinetics-mirror-auto1-r1_gamma1-batch1-color-translation/network-snapshot-000022.pkl"
 
   # Let's by default have only x flips
   aug: noaug

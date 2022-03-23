@@ -25,7 +25,7 @@ torch.set_grad_enabled(False)
 # @click.option('--num_videos', type=int, help='Number of images to generate', default=100, show_default=True)
 # @click.option('--seed', type=int, help='Random seed', default=42, metavar='DIR')
 # @click.option('--outdir', help='Where to save the output images', type=str, required=True, metavar='DIR')
-def generate_videos(
+def generate_videos_swint(
     network_pkl: str,
     timesteps: int,
     num_videos: int,
@@ -64,6 +64,7 @@ def generate_videos(
         label_ind = label_map.index(label)
         label_ind = torch.tensor([label_ind], requires_grad = False).cuda()
         img = img.transpose(1,2)
+        img = (img - torch.min(img))/(torch.max(img)-torch.min(img))
         out_tens.append(img)
         out_lab.append(label_ind)
     

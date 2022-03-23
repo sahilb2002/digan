@@ -117,7 +117,7 @@ def setup_training_loop_kwargs(
         args.data_loader_kwargs = dnnlib.EasyDict(pin_memory=False, num_workers=4, prefetch_factor=2)
     else:
         resolution = 128
-        args.training_set_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset', path=data, use_labels=True, resolution=resolution, max_size=None, xflip=True, train=True)
+        args.training_set_kwargs = dnnlib.EasyDict(class_name='training.dataset.ImageFolderDataset', path=data, use_labels=True, resolution=resolution, max_size=None, xflip=False, train=True)
         args.data_loader_kwargs = dnnlib.EasyDict(pin_memory=False, num_workers=4, prefetch_factor=2)
 
     try:

@@ -1,4 +1,4 @@
-﻿
+
 # Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
 #
 # NVIDIA CORPORATION and its licensors retain all intellectual property
@@ -146,7 +146,8 @@ def make_imageclip_dataset(dir, nframes, class_to_idx, vid_diverse_sampling, spl
                                     images.append(item_frames)  # item_frames is a list containing 32 frames.
                                     item_frames = []
                                 i = i + 1
-
+    # print("length of images = ",len(images))
+    # images = [img for item in images for img in item]                    
     return images
 
 
@@ -233,10 +234,13 @@ class Dataset(torch.utils.data.Dataset):
 
     def _get_raw_labels(self):
         if self._raw_labels is None:
+            print("here")
             self._raw_labels = self._load_raw_labels() if self._use_labels else None
+            # self._raw_labels = self._raw_labels[:self._raw_shape[0]]
             if self._raw_labels is None:
                 self._raw_labels = np.zeros([self._raw_shape[0], 0], dtype=np.float32)
             assert isinstance(self._raw_labels, np.ndarray)
+            print("raw_label_shape= ",self._raw_labels.shape, " raw_shape = ",self._raw_shape)
             assert self._raw_labels.shape[0] == self._raw_shape[0]
             assert self._raw_labels.dtype in [np.float32, np.int64]
             if self._raw_labels.dtype == np.int64:
@@ -313,8 +317,11 @@ class Dataset(torch.utils.data.Dataset):
     def label_shape(self):
         if self._label_shape is None:
             raw_labels = self._get_raw_labels()
+
             if raw_labels.dtype == np.int64:
                 self._label_shape = [int(np.max(raw_labels)) + 1]
+                print(raw_labels)
+                print(self._label_shape)
             else:
                 self._label_shape = raw_labels.shape[1:]
         return list(self._label_shape)
@@ -524,7 +531,7 @@ class ImageFolderDataset(Dataset):
     def __init__(self,
                  path,  # Path to directory or zip.
                  resolution=None,
-                 nframes=16,  # number of frames for each video.
+                 nframes=50,  # number of frames for each video.
                  train=True,
                  interpolate=False,
                  loader=default_loader,  # loader for "sequence" of images
@@ -582,7 +589,9 @@ class ImageFolderDataset(Dataset):
             self._all_fnames = set(self._get_zipfile().namelist())
         else:
             raise IOError('Path must point to a directory or zip')
-
+        print("all frames...")
+        # for fname in self._all_fnames:
+          # print
         PIL.Image.init()
         self._image_fnames = sorted(fname for fname in self._all_fnames if self._file_ext(fname) in PIL.Image.EXTENSION)
         if len(self._image_fnames) == 0:
@@ -638,7 +647,10 @@ class ImageFolderDataset(Dataset):
         if labels is None:
             return None
         labels = dict(labels)
-        labels = [labels[fname.replace('\\', '/')] for fname in self._image_fnames]
+        # for fname in self._image_fnames:
+            # print(fname.rsplit("/",1)[0])
+        labels = [labels[fname.replace('\\','/')] for fname in self._image_fnames]
+        
         labels = np.array(labels)
         labels = labels.astype({1: np.int64, 2: np.float32}[labels.ndim])
         return labels
